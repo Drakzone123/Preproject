@@ -8,5 +8,6 @@ public class PlayerSO : ScriptableObject
 {
     public float jumpHeight = 1.5f;
     public float gravity = -10f;
+    public float gravityDown = -30f;
     public float moveSpeed = 4f;
 }
