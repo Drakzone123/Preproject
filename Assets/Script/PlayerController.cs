@@ -1,36 +1,52 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine.Editor;
 using UnityEngine;
+
 public enum PlayerType
 {
     Small, Big
 }
 public class PlayerController : Being
 {
+    public static PlayerController Singleton;
+    [Header("Player Status")]
     public PlayerSO playerSmallSO;
     public PlayerSO playerBigSO;
     public float jumpHeight;
     public float gravity;
     public float gravityDown;
     public float moveSpeed;
-    CharacterController controller;
     public Vector3 velocity;
+    public bool isGrounded;
+
+    CharacterController controller;
     PlayerType currentPlayerType;
     Transform currentCharacter;
     int jumpCount = 0;
-    bool isGrounded;
+    PlayerAttacker attacker = new PlayerAttacker();
+
+    [Header("Animation")]
+    Animator animator;
+    AnimatorVarSmooth animMoveX;
 
     void Awake()
     {
+        Singleton = this;
         //initialize
         controller = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
     }
-    private void Start() {
+    private void Start()
+    {
         //Test Setup Characcter
         //init player state
         SwapCharacter(PlayerType.Small);
         PerkManager.Singleton.GetPerk("heart").OnUse(this);
         PerkManager.Singleton.UnlockPerk("dash");
+        //set tranform
+        transform.rotation = Quaternion.Euler(0, 90f, 0);
     }
     void Update()
     {
@@ -61,7 +77,25 @@ public class PlayerController : Being
             Dash(10, .2f);
         }
 
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Debug.Log("on try attack");
+            attacker.Attack();
+        }
+
+
         UpdateMovement();
+
+    }
+    private void LateUpdate()
+    {
+        var moveX = controller.velocity.x;
+        moveX = Mathf.Abs(moveX);
+        animMoveX.Set(moveX, 0.05f);
+        animMoveX.Update();
+        Debug.Log("moe x val: " + animMoveX.value);
+        Debug.Log("character velo: " + controller.velocity);
+        animator.SetFloat("moveX", animMoveX.value);
     }
     void onTouchFirstGround()
     {
@@ -99,7 +133,7 @@ public class PlayerController : Being
             transform.rotation = Quaternion.Euler(0, -90f, 0);
         }
         //on move right
-        else
+        if (movement.x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90f, 0);
         }
@@ -107,6 +141,7 @@ public class PlayerController : Being
 
         //default velocity
         controller.Move(velocity * Time.deltaTime);
+
     }
     void Jump(float jumpHeight)
     {
@@ -142,18 +177,18 @@ public class PlayerController : Being
         {
             transform.GetChild(0).gameObject.SetActive(true);
             transform.GetChild(1).gameObject.SetActive(false);
-            controller.center = new Vector3(0, 1, 0);
-            controller.height = 2f;
-            controller.radius = 0.55f;
+            controller.center = new Vector3(0, 0.7f, 0);
+            controller.height = 1.3f;
+            controller.radius = 0.22f;
             //big
         }
         else
         {
             transform.GetChild(0).gameObject.SetActive(false);
             transform.GetChild(1).gameObject.SetActive(true);
-            controller.center = new Vector3(0, 2.29f, 0);
-            controller.height = 4.5f;
-            controller.radius = 1.2f;
+            controller.center = new Vector3(0, 1.125f, 0);
+            controller.height = 2.25f;
+            controller.radius = .38f;
         }
 
     }

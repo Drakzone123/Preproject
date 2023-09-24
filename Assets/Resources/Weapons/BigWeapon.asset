@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64ac48b4fe85fc048b2b5337893da30c, type: 3}
-  m_Name: Big Player Status
+  m_Script: {fileID: 11500000, guid: 01637c467b6a0604cb2e24c5bfb8f729, type: 3}
+  m_Name: BigWeapon
   m_EditorClassIdentifier: 
-  jumpHeight: 1.5
-  gravity: -10
-  gravityDown: -15
-  moveSpeed: 4
+  weaponId: bigweapon
+  weaponType: Bigweapon
+  weaponDmg: 1
+  weaponSpeed: 1
+  damageRadius: 1
